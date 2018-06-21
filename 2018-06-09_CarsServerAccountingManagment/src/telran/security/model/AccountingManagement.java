@@ -1,8 +1,5 @@
 package telran.security.model;
 
-import java.io.BufferedReader;
-import java.io.Console;
-import java.io.InputStreamReader;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,54 +84,11 @@ public class AccountingManagement implements IAccountingManagement {
 		System.out.println("######There is no Admin account in database#####");
 		System.out.println("To start working:");
 		String username = inOut.getString("Please enter username for admin user");
-		String password = null;
-		String pwdMessage = "Enter the password: ";
-		Console cons = System.console();
-		if (cons == null) {
-			// We are in the Eclipse IDE.
-			try {
-				System.out.println("LOG: Running within Eclipse IDE...");
-				System.out.println("LOG: Password will not be masked");
-				password = getPasswordWithinEclipse(pwdMessage);
-				System.out.println("LOG: Password entered");
-			} catch (Exception e) {
-				System.err.println("Error getting password" + e.getMessage());
-				System.exit(1);
-			}
-		} else {
-			password = getPasswordMasked(cons, pwdMessage);
-		}
-		// String password = inOut.getString("Please enter password for admin user");
+
+		String password = inOut.getPassword("Please enter password for admin user");
 		String[] roles = new String[] { "ROLE_ADMIN" };
 		Account acc = new Account(username, password, roles);
 		addAccount(acc);
 	}
 
-	public static String getPasswordWithinEclipse(String msg) throws Exception {
-		// In Eclipse IDE
-		System.out.print(msg);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		String password = reader.readLine();
-		if (password != null) {
-			if (password.length() <= 0) {
-				System.out.println("Invalid input\n");
-				throw new Exception("Error reading in password");
-			}
-		}
-		return password;
-	}
-
-	public static String getPasswordMasked(Console cons, String msg) {
-		char[] passwd;
-		while (true) {
-			passwd = cons.readPassword("%s", msg);
-			if (passwd != null) {
-				if (passwd.length > 0) {
-					return new String(passwd);
-				} else {
-					System.out.println("Invalid input\n");
-				}
-			}
-		}
-	}
 }
